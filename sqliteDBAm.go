@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -25,7 +26,7 @@ func main() {
 	}
 	defer rows.Close()
 
-	noteSlice := []note{}
+	noteSlices := []note{}
 	for rows.Next() {
 		noteVar := note{}
 		err := rows.Scan(&noteVar.id, &noteVar.flds)
@@ -33,8 +34,12 @@ func main() {
 			fmt.Println(err)
 			continue
 		}
-		noteSlice = append(noteSlice, noteVar)
+		noteSlices = append(noteSlices, noteVar)
 	}
+	synonymsField := strings.Split(noteSlices[34].flds, string(''))[1]
+	firstLetter := noteSlices[30].flds[:1]
+	fmt.Println(synonymsField) //29: ONE synonym; 32 ...erial
+	fmt.Println(firstLetter)
 
-	fmt.Println(len(noteSlice))
+	fmt.Println(len(noteSlices))
 }
