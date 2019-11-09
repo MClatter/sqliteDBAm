@@ -14,6 +14,24 @@ type note struct {
 	flds string
 }
 
+func sortOutSynonymsAndHints(separationString, synField, firstLetter string) {
+	synString := strings.Trim(strings.Split(synField, separationString)[1], "</p>")
+	synSlice := strings.Split(synString, ", ")
+	sort.Strings(synSlice)
+
+	firstLetterSlice := []string{}
+	for i := 0; i < len(synSlice); i++ {
+		if synSlice[i][:1] == firstLetter {
+			firstLetterSlice = append(firstLetterSlice, synSlice[i])
+			synSlice = append(synSlice[:i], synSlice[i+1:]...)
+			i--
+		}
+	}
+	fmt.Println(synString)
+	fmt.Println(synSlice)
+	fmt.Println(firstLetterSlice)
+}
+
 func main() {
 	db, err := sql.Open("sqlite3", "C:/Users/Michael/Documents/SQLite scripts/collection.anki2")
 	if err != nil {
@@ -37,27 +55,22 @@ func main() {
 		}
 		noteSlices = append(noteSlices, noteVar)
 	}
-	synField := strings.Split(noteSlices[36].flds, string(''))[1]
-	firstLetter := noteSlices[36].flds[:1]
-	synString := strings.Trim(strings.Split(synField, "Synonyms:</small><p class='ex'>")[1], "</p>")
-	synSlice := strings.Split(synString, ", ")
-	sort.Strings(synSlice)
+	record := 4
+	synField := strings.Split(noteSlices[record].flds, string(''))[1]
+	fmt.Println(synField)
 
-	firstLetterSlice := []string{}
-	for i := 0; i < len(synSlice); i++ {
-		if synSlice[i][:1] == firstLetter {
-			firstLetterSlice = append(firstLetterSlice, synSlice[i])
-			synSlice = append(synSlice[:i], synSlice[i+1:]...)
-			i--
-		}
+	firstLetter := noteSlices[record].flds[:1]
+	fmt.Println(firstLetter)
+
+	if strings.Contains(synField, "</p><span class=\"sentence\">") && strings.Contains(synField, "<small>Synonym") {
+		synField = strings.Replace(strings.Replace(synField, "</p><span class=\"sentence\">", ", ", -1), "/span", "/p", -1)
 	}
-
-	//fmt.Println(synField)
-	//fmt.Println(firstLetter)
-	fmt.Println(synString)
-	fmt.Println(synSlice)
-	fmt.Println(firstLetterSlice)
+	if strings.Contains(synField, "<small>Synonym") {
+		sortOutSynonymsAndHints(":</small><p class='ex'>", synField, firstLetter)
+	}
 }
 
-/*29: ONE synonym; 32 ...erial; 34 <span class="sentence">contain</span>; 36 many synonyms
- */
+// TODO:try/catch errors
+/*29: ONE synonym; 32 ...erial; 34 <span class="sentence">contain</span>; 36,37 many synonyms
+2,3: no syns; 4: one syn
+*/
