@@ -24,9 +24,17 @@ func sortOutSynonymsAndHints(separationString, field, firstLetter string) {
 	sort.Strings(synSplit)
 
 	firstLetterSlice := []string{}
+	ruDefSlice := []string{}
 	for i := 0; i < len(synSplit); i++ {
 		if synSplit[i][:1] == firstLetter {
 			firstLetterSlice = append(firstLetterSlice, synSplit[i])
+			synSplit = append(synSplit[:i], synSplit[i+1:]...)
+			i--
+			continue
+		}
+		fmt.Println(synSplit[i][0])
+		if synSplit[i][0] > 207 {
+			ruDefSlice = append(ruDefSlice, synSplit[i])
 			synSplit = append(synSplit[:i], synSplit[i+1:]...)
 			i--
 		}
@@ -34,6 +42,7 @@ func sortOutSynonymsAndHints(separationString, field, firstLetter string) {
 	fmt.Println(synString)
 	fmt.Println(synSplit)
 	fmt.Println(firstLetterSlice)
+	fmt.Println(ruDefSlice)
 }
 
 func main() {
@@ -59,7 +68,7 @@ func main() {
 		}
 		noteSlices = append(noteSlices, noteVar)
 	}
-	record := 29
+	record := 1024
 	field := strings.Split(noteSlices[record].flds, string(''))[1]
 	fmt.Println(field)
 
@@ -74,7 +83,7 @@ func main() {
 	}
 }
 
-// TODO:try/catch errors
+// TODO:
 /*29: ONE synonym; 32 ...erial; 34 <span class="sentence">contain</span>; 36,37 many synonyms
-2,3: no syns; 4: one syn
+2,3: no syns; 4: one syn, 1024 обсуждать, 9151: no syns only ru
 */
