@@ -14,8 +14,8 @@ type note struct {
 	flds string
 }
 
-func sortOutSynonymsAndHints(separationString, field, firstLetter string) {
-	fieldSplit := strings.Split(field, separationString)
+func sortSynsHints(field, firstLetter string) {
+	fieldSplit := strings.Split(field, ":</small><p class='ex'>")
 	if len(fieldSplit) == 1 {
 		fieldSplit = strings.Split(field, ":</small><p class=\"ex\">")
 	}
@@ -32,7 +32,6 @@ func sortOutSynonymsAndHints(separationString, field, firstLetter string) {
 			i--
 			continue
 		}
-		fmt.Println(synSplit[i][0])
 		if synSplit[i][0] > 207 {
 			ruDefSlice = append(ruDefSlice, synSplit[i])
 			synSplit = append(synSplit[:i], synSplit[i+1:]...)
@@ -68,18 +67,21 @@ func main() {
 		}
 		noteSlices = append(noteSlices, noteVar)
 	}
-	record := 1024
+	record := 9151
 	field := strings.Split(noteSlices[record].flds, string(''))[1]
 	fmt.Println(field)
 
 	firstLetter := noteSlices[record].flds[:1]
 	fmt.Println(firstLetter)
 
-	if strings.Contains(field, "</p><span class=\"sentence\">") && strings.Contains(field, "<small>Synonym") {
-		field = strings.Replace(strings.Replace(field, "</p><span class=\"sentence\">", ", ", -1), "/span", "/p", -1)
+	if strings.Contains(field, "</p><span class=\"sentence\">") {
+		if strings.Contains(field, "<small>Synonym") {
+			field = strings.Replace(strings.Replace(field, "</p><span class=\"sentence\">", ", ", -1), "/span", "/p", -1)
+		}
+		field = strings.Replace(strings.Replace(field, "<span class=\"sentence\">", "<small>Synonyms:</small><p class='ex'>", -1), "/span", "/p", -1)
 	}
 	if strings.Contains(field, "<small>Synonym") {
-		sortOutSynonymsAndHints(":</small><p class='ex'>", field, firstLetter)
+		sortSynsHints(field, firstLetter)
 	}
 }
 
